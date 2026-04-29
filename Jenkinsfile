@@ -1,41 +1,25 @@
 pipeline {
     agent any
 
-    environment {
-        APP_NAME = "smartrh"
-        NAMESPACE = "smartrh"
-    }
-
     stages {
 
-        stage('Checkout') {
+        stage('Use Local Project') {
             steps {
-                git branch: 'main',
-                url: 'https://github.com/SalmaHabli/smartrh-project.git'
-            }
-        }
-
-        stage('Build Backend') {
-            steps {
-                sh 'docker build -t smartrh-backend ./backend'
-            }
-        }
-
-        stage('Build Frontend') {
-            steps {
-                sh 'docker build -t smartrh-frontend ./frontend'
+                sh 'ls -la /root/devops-project-PFE'
             }
         }
 
         stage('Deploy Kubernetes') {
             steps {
-                sh 'kubectl apply -f k8s/'
+                sh '''
+                ansible-playbook -i /root/ansible-k8s/inventory /root/ansible-k8s/playbooks/deploy-k8s.yml
+                '''
             }
         }
 
-        stage('Verify') {
+        stage('Done') {
             steps {
-                sh 'kubectl get pods -n smartrh'
+                echo 'Deployment Success'
             }
         }
     }
