@@ -7,9 +7,11 @@ kind: Pod
 spec:
   containers:
   - name: kubectl
-    image: bitnami/kubectl:latest
+    image: lachlanevenson/k8s-kubectl:v1.28.0
     command:
-    - cat
+    - sleep
+    args:
+    - "999999"
     tty: true
 '''
     }
@@ -23,12 +25,10 @@ spec:
       }
     }
 
-    stage('Deploy') {
+    stage('Deploy Test') {
       steps {
         container('kubectl') {
-          sh '''
-          kubectl get nodes
-          '''
+          sh 'kubectl get pods -A'
         }
       }
     }
