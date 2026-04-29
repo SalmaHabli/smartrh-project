@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: smartrh-backend
+  namespace: smartrh
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: smartrh-backend
+  template:
+    metadata:
+      labels:
+        app: smartrh-backend
+    spec:
+      containers:
+        - name: backend
+          image: docker.io/library/smarthr-backend:latest   # ⚠️ ton image locale
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 5000
+          env:
+            - name: DB_HOST
+              value: postgres
+            - name: DB_PORT
+              value: "5432"
+            - name: DB_USER
+              value: postgres
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: smartrh-secret
+                  key: DB_PASSWORD
+            - name: DB_NAME
+              value: smarthr_db
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: smartrh-secret
+                  key: JWT_SECRET

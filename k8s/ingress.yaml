@@ -1,0 +1,24 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: smartrh-ingress
+  namespace: smartrh
+  annotations:
+    cert-manager.io/cluster-issuer: selfsigned-issuer
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: smartrh.local
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: smartrh-frontend-service
+            port:
+              number: 80
+  tls:
+  - hosts:
+    - smartrh.local
+    secretName: smartrh-tls

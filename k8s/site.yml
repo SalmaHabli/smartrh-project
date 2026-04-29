@@ -1,0 +1,189 @@
+---
+- name: Deploy SmartHR application on Kubernetes
+  hosts: k8s_master
+  become: yes
+  tasks:
+
+    # =========================
+    # 1. NAMESPACE
+    # =========================
+    - name: Create namespace smartrh
+      kubernetes.core.k8s:
+        state: present
+        definition:
+          apiVersion: v1
+          kind: Namespace
+          metadata:
+            name: smartrh
+
+    # =========================
+    # 2. POSTGRES DATABASE
+    # =========================
+    - name: Deploy PostgreSQL
+      kubernetes.core.k8s:
+        state: present
+        definition:
+          apiVersion: apps/v1
+          kind: Deployment
+          metadata:
+            name: postgres
+            namespace: smartrh
+          spec:
+            replicas: 1
+            selector:
+              matchLabels:
+                app: postgres
+            template:
+              metadata:
+                labels:
+                  app: postgres
+              spec:
+                containers:
+                  - name: postgres
+                    image: postgres:15
+                    env:
+                      - name: POSTGRES_DB
+                        value: smartrh
+                      - name: POSTGRES_USER
+                        value: admin
+                      - name: POSTGRES_PASSWORD
+                        value: admin123
+                    ports:
+                      - containerPort: 5432
+
+    - name: PostgreSQL Service
+      kubernetes.core.k8s:
+        state: present
+        definition:
+          apiVersion: v1
+          kind: Service
+          metadata:
+            name: postgres
+            namespace: smartrh
+          spec:
+            selector:
+              app: postgres
+            ports:
+              - port: 5432
+
+    # =========================
+    # 3. BACKEND
+    # =========================
+    - name: Deploy Backend
+      kubernetes.core.k8s:
+        state: present
+        definition:
+          apiVersion: apps/v1
+          kind: Deployment
+          metadata:
+            name: backend
+            namespace: smartrh
+          spec:
+            replicas: 2
+            selector:
+              matchLabels:
+                app: backend
+            template:
+              metadata:
+                labels:
+                  app: backend
+              spec:
+                containers:
+                  - name: backend
+                    image: smartrh-backend:latest
+                    ports:
+                      - containerPort: 5000
+                    env:
+                      - name: DB_HOST
+                        value: postgres
+
+    - name: Backend Service
+      kubernetes.core.k8s:
+        state: present
+        definition:
+          apiVersion: v1
+          kind: Service
+          metadata:
+            name: backend
+            namespace: smartrh
+          spec:
+            selector:
+              app: backend
+            ports:
+              - port: 5000
+
+    # =========================
+    # 4. FRONTEND
+    # =========================
+    - name: Deploy Frontend
+      kubernetes.core.k8s:
+        state: present
+        definition:
+          apiVersion: apps/v1
+          kind: Deployment
+          metadata:
+            name: frontend
+            namespace: smartrh
+          spec:
+            replicas: 2
+            selector:
+              matchLabels:
+                app: frontend
+            template:
+              metadata:
+                labels:
+                  app: frontend
+              spec:
+                containers:
+                  - name: frontend
+                    image: smartrh-frontend:latest
+                    ports:
+                      - containerPort: 80
+
+    - name: Frontend Service
+      kubernetes.core.k8s:
+        state: present
+        definition:
+          apiVersion: v1
+          kind: Service
+          metadata:
+            name: frontend
+            namespace: smartrh
+          spec:
+            type: NodePort
+            selector:
+              app: frontend
+            ports:
+              - port: 80
+                nodePort: 30007
+
+    # =========================
+    # 5. INGRESS
+    # =========================
+    - name: Ingress SmartHR
+      kubernetes.core.k8s:
+        state: present
+        definition:
+          apiVersion: networking.k8s.io/v1
+          kind: Ingress
+          metadata:
+            name: smartrh-ingress
+            namespace: smartrh
+            annotations:
+              cert-manager.io/cluster-issuer: selfsigned-issuer
+          spec:
+            tls:
+              - hosts:
+                  - smartrh.local
+                secretName: smartrh-tls
+            rules:
+              - host: smartrh.local
+                http:
+                  paths:
+                    - path: /
+                      pathType: Prefix
+                      backend:
+                        service:
+                          name: frontend
+                          port:
+                            number: 80
