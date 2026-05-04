@@ -8,7 +8,7 @@ spec:
   serviceAccountName: jenkins-sa
   containers:
   - name: kubectl
-    image: bitnami/kubectl:1.28
+    image: alpine/k8s:1.28.15
     command:
     - sleep
     args:
