@@ -8,7 +8,7 @@ spec:
   serviceAccountName: jenkins-sa
   containers:
   - name: kubectl
-    image: bitnami/kubectl:1.28
+    image: registry.k8s.io/kubectl:v1.28.0
     command:
     - cat
     tty: true
