@@ -5,13 +5,12 @@ pipeline {
 apiVersion: v1
 kind: Pod
 spec:
+  serviceAccountName: jenkins-sa
   containers:
   - name: kubectl
-    image: bitnami/kubectl:latest
+    image: bitnami/kubectl:1.28
     command:
-    - sleep
-    args:
-    - "999999"
+    - cat
     tty: true
 '''
     }
@@ -19,15 +18,10 @@ spec:
 
   stages {
 
-    stage('Checkout') {
-      steps {
-        checkout scm
-      }
-    }
-
-    stage('Deploy Test') {
+    stage('Test Kubernetes') {
       steps {
         container('kubectl') {
+          sh 'kubectl get nodes'
           sh 'kubectl get pods -A'
         }
       }
