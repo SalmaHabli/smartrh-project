@@ -38,6 +38,7 @@ spec:
     IMAGE_TAG      = "${BUILD_NUMBER}"
     DOCKER_CREDS   = "dockerhub-credentials1"
     K8S_NAMESPACE  = "smartrh"
+    DOCKER_HOST    = "tcp://localhost:2375"
   }
 
   stages {
@@ -87,15 +88,12 @@ spec:
             usernameVariable: 'DOCKER_USER',
             passwordVariable: 'DOCKER_PASS'
           )]) {
+            sh 'echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin'
             sh """
-              echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
-
               docker push ${BACKEND_IMAGE}:${IMAGE_TAG}
               docker push ${BACKEND_IMAGE}:latest
-
               docker push ${FRONTEND_IMAGE}:${IMAGE_TAG}
               docker push ${FRONTEND_IMAGE}:latest
-
               echo "✅ Images pushées → salma217/ sur Docker Hub"
             """
           }
@@ -108,17 +106,12 @@ spec:
         container('kubectl') {
           sh """
             echo "🚀 Déploiement Kubernetes..."
-
-            # nom container = backend (tel que défini dans ton YAML)
             kubectl set image deployment/smartrh-backend \
               backend=${BACKEND_IMAGE}:${IMAGE_TAG} \
               -n ${K8S_NAMESPACE}
-
-            # nom container = frontend (tel que défini dans ton YAML)
             kubectl set image deployment/smartrh-frontend \
               frontend=${FRONTEND_IMAGE}:${IMAGE_TAG} \
               -n ${K8S_NAMESPACE}
-
             echo "✅ Images mises à jour dans Kubernetes"
           """
         }
@@ -154,9 +147,14 @@ spec:
       echo "❌ ÉCHEC — Rollback en cours..."
       container('kubectl') {
         sh """
-          kubectl rollout undo deployment/smartrh-backend -n ${K8S_NAMESPACE}
-          kubectl rollout undo deployment/smartrh-frontend -n ${K8S_NAMESPACE}
-          echo "⏪ Rollback effectué"
+          for dep in smartrh-backend smartrh-frontend; do
+            if kubectl rollout history deployment/\$dep -n ${K8S_NAMESPACE} > /dev/null 2>&1; then
+              kubectl rollout undo deployment/\$dep -n ${K8S_NAMESPACE}
+              echo "⏪ Rollback effectué: \$dep"
+            else
+              echo "⚠️  Pas d'historique pour \$dep — rollback ignoré"
+            fi
+          done
         """
       }
     }
