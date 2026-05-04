@@ -14,6 +14,8 @@ spec:
     env:
     - name: DOCKER_TLS_CERTDIR
       value: ""
+    - name: DOCKER_HOST
+      value: "tcp://localhost:2375"
     volumeMounts:
     - name: docker-storage
       mountPath: /var/lib/docker
@@ -38,7 +40,6 @@ spec:
     IMAGE_TAG      = "${BUILD_NUMBER}"
     DOCKER_CREDS   = "dockerhub-credentials1"
     K8S_NAMESPACE  = "smartrh"
-    DOCKER_HOST    = "tcp://localhost:2375"
   }
 
   stages {
@@ -50,16 +51,46 @@ spec:
       }
     }
 
+    // ⚠️ NOUVELLE ÉTAPE : Initialisation du démon Docker
+    stage('Initialisation Docker') {
+      steps {
+        container('docker') {
+          script {
+            sh '''
+              echo "🐳 Attente du démarrage du démon Docker..."
+              
+              # Attendre que Docker soit prêt (max 60 secondes)
+              for i in $(seq 1 30); do
+                if docker info > /dev/null 2>&1; then
+                  echo "✅ Démon Docker prêt !"
+                  docker version
+                  break
+                fi
+                echo "⏳ Démon Docker pas encore prêt... (tentative $i/30)"
+                sleep 2
+              done
+              
+              # Vérification finale
+              if ! docker info > /dev/null 2>&1; then
+                echo "❌ Le démon Docker n'a pas démarré"
+                exit 1
+              fi
+            '''
+          }
+        }
+      }
+    }
+
     stage('Build Backend') {
       steps {
         container('docker') {
           sh """
-            echo "🔨 Build Backend..."
+            echo "🔨 Build du Backend..."
             docker build \
               -t ${BACKEND_IMAGE}:${IMAGE_TAG} \
               -t ${BACKEND_IMAGE}:latest \
               ./backend
-            echo "✅ Backend buildé"
+            echo "✅ Backend construit"
           """
         }
       }
@@ -69,12 +100,12 @@ spec:
       steps {
         container('docker') {
           sh """
-            echo "🔨 Build Frontend..."
+            echo "🔨 Build du Frontend..."
             docker build \
               -t ${FRONTEND_IMAGE}:${IMAGE_TAG} \
               -t ${FRONTEND_IMAGE}:latest \
               ./frontend
-            echo "✅ Frontend buildé"
+            echo "✅ Frontend construit"
           """
         }
       }
@@ -94,7 +125,7 @@ spec:
               docker push ${BACKEND_IMAGE}:latest
               docker push ${FRONTEND_IMAGE}:${IMAGE_TAG}
               docker push ${FRONTEND_IMAGE}:latest
-              echo "✅ Images pushées → salma217/ sur Docker Hub"
+              echo "✅ Images poussées vers Docker Hub (salma217/)"
             """
           }
         }
@@ -104,29 +135,46 @@ spec:
     stage('Deploy to Kubernetes') {
       steps {
         container('kubectl') {
-          sh """
-            echo "🚀 Déploiement Kubernetes..."
-            kubectl set image deployment/smartrh-backend \
-              backend=${BACKEND_IMAGE}:${IMAGE_TAG} \
-              -n ${K8S_NAMESPACE}
-            kubectl set image deployment/smartrh-frontend \
-              frontend=${FRONTEND_IMAGE}:${IMAGE_TAG} \
-              -n ${K8S_NAMESPACE}
-            echo "✅ Images mises à jour dans Kubernetes"
-          """
+          script {
+            sh """
+              echo "🚀 Déploiement Kubernetes..."
+              
+              # Vérifier et créer les déploiements si inexistants
+              if ! kubectl get deployment smartrh-backend -n ${K8S_NAMESPACE} > /dev/null 2>&1; then
+                echo "Création du déploiement backend..."
+                kubectl apply -f k8s/backend-deployment.yaml -n ${K8S_NAMESPACE} || true
+              fi
+              
+              if ! kubectl get deployment smartrh-frontend -n ${K8S_NAMESPACE} > /dev/null 2>&1; then
+                echo "Création du déploiement frontend..."
+                kubectl apply -f k8s/frontend-deployment.yaml -n ${K8S_NAMESPACE} || true
+              fi
+              
+              # Mise à jour des images
+              kubectl set image deployment/smartrh-backend \
+                backend=${BACKEND_IMAGE}:${IMAGE_TAG} \
+                -n ${K8S_NAMESPACE} --record
+                
+              kubectl set image deployment/smartrh-frontend \
+                frontend=${FRONTEND_IMAGE}:${IMAGE_TAG} \
+                -n ${K8S_NAMESPACE} --record
+                
+              echo "✅ Images mises à jour dans Kubernetes"
+            """
+          }
         }
       }
     }
 
-    stage('Rollout Status') {
+    stage('Statut du Rollout') {
       steps {
         container('kubectl') {
           sh """
-            echo "⏳ Rollout Backend..."
+            echo "⏳ Rollout du Backend..."
             kubectl rollout status deployment/smartrh-backend \
               -n ${K8S_NAMESPACE} --timeout=120s
 
-            echo "⏳ Rollout Frontend..."
+            echo "⏳ Rollout du Frontend..."
             kubectl rollout status deployment/smartrh-frontend \
               -n ${K8S_NAMESPACE} --timeout=120s
 
@@ -150,7 +198,7 @@ spec:
           for dep in smartrh-backend smartrh-frontend; do
             if kubectl rollout history deployment/\$dep -n ${K8S_NAMESPACE} > /dev/null 2>&1; then
               kubectl rollout undo deployment/\$dep -n ${K8S_NAMESPACE}
-              echo "⏪ Rollback effectué: \$dep"
+              echo "⏪ Rollback effectué pour: \$dep"
             else
               echo "⚠️  Pas d'historique pour \$dep — rollback ignoré"
             fi
