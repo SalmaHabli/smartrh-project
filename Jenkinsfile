@@ -8,16 +8,18 @@ spec:
   serviceAccountName: jenkins-sa
   containers:
   - name: kubectl
-    image: registry.k8s.io/kubectl:v1.28.0
+    image: bitnami/kubectl:1.28
     command:
-    - cat
+    - sleep
+    args:
+    - 99d
     tty: true
+    securityContext:
+      runAsUser: 0
 '''
     }
   }
-
   stages {
-
     stage('Test Kubernetes') {
       steps {
         container('kubectl') {
@@ -26,6 +28,5 @@ spec:
         }
       }
     }
-
   }
 }
