@@ -36,7 +36,7 @@ spec:
     BACKEND_IMAGE  = "${REGISTRY}/smartrh-backend"
     FRONTEND_IMAGE = "${REGISTRY}/smartrh-frontend"
     IMAGE_TAG      = "${BUILD_NUMBER}"
-    DOCKER_CREDS   = "dockerhub-credentials"
+    DOCKER_CREDS   = "dockerhub-credentials1"
     K8S_NAMESPACE  = "smartrh"
   }
 
