@@ -1,0 +1,582 @@
+/* Image de fond pour les pages d'accueil (Dashboard, etc.) */
+body.dashboard-page {
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)),
+              url('https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=1920&q=80');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  min-height: 100vh;
+}
+
+/* Fond pour Login et Register - Image comme le dashboard */
+body.login-page {
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)),
+              url('https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=1920&q=80');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Style du conteneur Login */
+body.login-page .App {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+body.login-page .form-container {
+  background: rgba(255, 255, 255, 0.95);
+  padding: 45px;
+  border-radius: 20px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+  max-width: 420px;
+  width: 100%;
+  text-align: center;
+  animation: fadeInUp 0.6s ease-out;
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+body.login-page .form-container h2 {
+  margin-bottom: 35px;
+  color: #1e3c72;
+  font-size: 2em;
+}
+
+body.login-page .form-container input {
+  padding: 16px;
+  border: 2px solid #e0e0e0;
+  border-radius: 12px;
+  background: white;
+}
+
+body.login-page .form-container button {
+  width: 100%;
+  padding: 16px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 12px;
+  font-size: 1.1em;
+  margin-top: 25px;
+}
+
+/* Layout du dashboard */
+.dashboard-container {
+  display: flex;
+  min-height: 100vh;
+  position: relative;
+}
+
+/* Bouton Hamburger amélioré */
+.hamburger {
+  position: fixed;
+  top: 15px;
+  left: 15px;
+  z-index: 1001;
+  background: linear-gradient(135deg, #007bff, #0056b3);
+  border: 2px solid #fff;
+  width: 50px;
+  height: 50px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+}
+
+.hamburger:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+}
+
+.hamburger span {
+  width: 30px;
+  height: 4px;
+  background: white;
+  margin: 3px 0;
+  border-radius: 2px;
+  transition: all 0.3s ease;
+}
+
+/* Animation du hamburger (devient une croix) */
+.hamburger.open span:nth-child(1) {
+  transform: rotate(-45deg) translate(-6px, 8px);
+}
+
+.hamburger.open span:nth-child(2) {
+  opacity: 0;
+}
+
+.hamburger.open span:nth-child(3) {
+  transform: rotate(45deg) translate(-6px, -8px);
+}
+
+/* Sidebar */
+.sidebar {
+  width: 280px;
+  background: linear-gradient(180deg, #343a40, #495057);
+  color: white;
+  padding: 25px;
+  position: fixed;
+  height: 100vh;
+  overflow-y: auto;
+  left: -280px;
+  top: 0;
+  z-index: 1000;
+  transition: left 0.4s ease;
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.3);
+}
+
+.sidebar.open {
+  left: 0;
+}
+
+.sidebar h2 {
+  margin-bottom: 25px;
+  font-size: 1.6em;
+  text-align: center;
+  border-bottom: 2px solid #fff;
+  padding-bottom: 10px;
+}
+
+.sidebar ul {
+  list-style: none;
+  padding: 0;
+}
+
+.sidebar li {
+  margin-bottom: 18px;
+}
+
+.sidebar a {
+  color: white;
+  text-decoration: none;
+  display: block;
+  padding: 12px 15px;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  font-weight: 500;
+}
+
+.sidebar a:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateX(5px);
+}
+
+.logout-btn {
+  background: linear-gradient(135deg, #dc3545, #c82333);
+  color: white;
+  border: none;
+  padding: 12px;
+  width: 100%;
+  cursor: pointer;
+  border-radius: 8px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.logout-btn:hover {
+  background: linear-gradient(135deg, #c82333, #a02622);
+  transform: translateY(-2px);
+}
+
+/* Overlay */
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 999;
+  transition: opacity 0.3s ease;
+}
+
+/* Contenu principal */
+.main-content {
+  margin-left: 0;
+  padding: 20px;
+  flex: 1;
+  padding-top: 80px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .hamburger {
+    width: 45px;
+    height: 45px;
+  }
+  .sidebar {
+    width: 100%;
+    left: -100%;
+  }
+  .sidebar.open {
+    left: 0;
+  }
+}
+
+/* Centrage du contenu des pages - Agrandi */
+.main-content .centered-content {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 30px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  min-height: 500px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: stretch;
+  font-size: 1.1em;
+}
+
+/* Responsive pour mobile - Ajusté */
+@media (max-width: 768px) {
+  .main-content .centered-content {
+    max-width: 95%;
+    padding: 20px;
+    min-height: 400px;
+  }
+}
+
+/* Styles spécifiques pour les formulaires (AddEmployee) */
+.centered-content form {
+  width: 100%;
+  max-width: 500px;
+}
+
+/* Styles pour les tables (EmployeeList) */
+.centered-content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+.centered-content th, .centered-content td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+.centered-content th {
+  background-color: #f8f9fa;
+  font-weight: bold;
+}
+
+/* Styles pour les boutons et liens */
+.centered-content button, .centered-content a {
+  margin: 10px;
+  padding: 10px 20px;
+  background: #007bff;
+  color: white;
+  text-decoration: none;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.centered-content button:hover, .centered-content a:hover {
+  background: #0056b3;
+}
+
+/* Responsive pour mobile */
+@media (max-width: 768px) {
+  .main-content .centered-content {
+    max-width: 95%;
+    padding: 15px;
+  }
+  .centered-content form {
+    max-width: 100%;
+  }
+}
+
+/* Styles pour les pages publiques (Login/Register) */
+body {
+  margin: 0;
+  font-family: 'Arial', sans-serif;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.App {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Conteneur du formulaire centré */
+.form-container {
+  background: white;
+  padding: 40px;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  max-width: 400px;
+  width: 100%;
+  text-align: center;
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.form-container h2 {
+  margin-bottom: 30px;
+  color: #333;
+  font-size: 2em;
+  font-weight: bold;
+}
+
+.form-container input, .form-container select {
+  width: 100%;
+  padding: 15px;
+  margin: 10px 0;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 1em;
+  transition: border-color 0.3s;
+}
+
+.form-container input:focus, .form-container select:focus {
+  border-color: #007bff;
+  outline: none;
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
+
+.form-container button {
+  width: 100%;
+  padding: 15px;
+  background: linear-gradient(135deg, #007bff, #0056b3);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.1em;
+  cursor: pointer;
+  transition: background 0.3s, transform 0.2s;
+  margin-top: 20px;
+}
+
+.form-container button:hover {
+  background: linear-gradient(135deg, #0056b3, #004085);
+  transform: translateY(-2px);
+}
+
+.form-container p {
+  margin-top: 20px;
+  color: #666;
+}
+
+.form-container a {
+  color: #007bff;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.form-container a:hover {
+  text-decoration: underline;
+}
+
+.error {
+  color: #dc3545;
+  background: #f8d7da;
+  padding: 10px;
+  border-radius: 5px;
+  margin-bottom: 20px;
+  border: 1px solid #f5c6cb;
+}
+
+/* Responsive pour mobile */
+@media (max-width: 768px) {
+  .form-container {
+    padding: 30px 20px;
+    max-width: 90%;
+  }
+  .form-container h2 {
+    font-size: 1.8em;
+  }
+}
+
+/* Sous-menu dans la sidebar */
+.submenu-toggle {
+  background: none;
+  border: none;
+  color: white;
+  text-align: left;
+  padding: 12px 15px;
+  width: 100%;
+  cursor: pointer;
+  font-size: 1em;
+  transition: background-color 0.3s;
+}
+
+.submenu-toggle:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.submenu {
+  list-style: none;
+  padding-left: 20px;
+  margin: 0;
+}
+
+.submenu li {
+  margin-bottom: 10px;
+}
+
+.submenu a {
+  color: #ddd;
+  text-decoration: none;
+  padding: 8px 15px;
+  display: block;
+  border-radius: 4px;
+  transition: background-color 0.3s;
+}
+
+.submenu a:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* Onglets dans Profile */
+.profile-tabs {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.profile-tabs button {
+  padding: 10px 20px;
+  margin: 0 5px;
+  background: #13497e;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.profile-tabs button.active {
+  background: #007bff;
+  color: white;
+  border-color: #007bff;
+}
+
+.profile-tabs button:hover {
+  background: #e9ecef;
+}
+
+.profile-section {
+  text-align: left;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.profile-section h3 {
+  margin-bottom: 15px;
+  color: #333;
+}
+
+.profile-section p {
+  margin: 10px 0;
+  padding: 8px;
+  background: #f8f9fa;
+  border-radius: 4px;
+}
+
+/* Actions du profil */
+.profile-actions {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.profile-actions button {
+  margin: 0 10px;
+  padding: 10px 20px;
+  background: #28a745;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.profile-actions button:hover {
+  background: #218838;
+}
+
+/* Inputs en mode édition */
+.profile-section input, .profile-section textarea {
+  width: 100%;
+  padding: 10px;
+  margin: 5px 0;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+/* Contenu principal */
+.main-content {
+  margin-left: 0;
+  padding: 20px;
+  flex: 1;
+  padding-top: 80px;
+  transition: all 0.3s ease;
+}
+
+/* Quand sidebar ouverte, centrer le contenu */
+.main-content.sidebar-open .centered-content {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* Quand sidebar fermée, contenu prend toute la largeur */
+.main-content:not(.sidebar-open) .centered-content {
+  max-width: none;
+  margin: 0;
+  width: 100%;
+}
+
+/* Ajustements pour mobile */
+@media (max-width: 768px) {
+  .main-content.sidebar-open .centered-content {
+    max-width: 90%;
+  }
+  .main-content:not(.sidebar-open) .centered-content {
+    max-width: 100%;
+  }
+}
+
+.main-content.sidebar-open .centered-content {
+  max-width: 600px !important;
+  margin: 0 auto !important;
+}
+
+.badge {
+  padding: 5px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: normal;
+}
+.badge-warning { background-color: #ffc107; color: #000; }
+.badge-success { background-color: #198754; color: #fff; }
+.badge-danger { background-color: #dc3545; color: #fff; }
+.badge-secondary { background-color: #6c757d; color: #fff; }
+

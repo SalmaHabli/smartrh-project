@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15
+    container_name: smartrh-db
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: Salma
+      POSTGRES_DB: smarthr_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - db-data:/var/lib/postgresql/data
+
+  backend:
+    build: ./backend
+    container_name: smartrh-backend
+    restart: always
+    ports:
+      - "5000:5000"
+    env_file:
+      - ./backend/.env   # <-- contient DB_HOST=db, DB_PORT=5432, DB_USER=postgres, DB_PASSWORD=Salma, DB_NAME=smarthr_db
+    depends_on:
+      - db
+
+  frontend:
+    build: ./frontend
+    container_name: smartrh-frontend
+    restart: always
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+
+volumes:
+  db-data:
