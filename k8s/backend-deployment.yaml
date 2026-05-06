@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: backend
-          image: docker.io/library/smarthr-backend:latest   # ⚠️ ton image locale
+          image: salma217/smartrh-backend:latest    #docker.io/library/smarthr-backend:latest   # ⚠️ ton image locale
           imagePullPolicy: Never
           ports:
             - containerPort: 5000
