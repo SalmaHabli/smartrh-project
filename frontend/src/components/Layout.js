@@ -6,17 +6,17 @@ const Layout = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [profileSubmenuOpen, setProfileSubmenuOpen] = useState(false);
   const [congesSubmenuOpen, setCongesSubmenuOpen] = useState(false);
+  const [mesCongesSubmenuOpen, setMesCongesSubmenuOpen] = useState(false); // NOUVEAU
   const [reclamationsSubmenuOpen, setReclamationsSubmenuOpen] = useState(false);
   const [fichesSubmenuOpen, setFichesSubmenuOpen] = useState(false);
   const [documentsSubmenuOpen, setDocumentsSubmenuOpen] = useState(false);
   const [inventaireSubmenuOpen, setInventaireSubmenuOpen] = useState(false);
   const [globalSearch, setGlobalSearch] = useState('');
   const [notificationsOpen, setNotificationsOpen] = useState(false);
-  const [notifications, setNotifications] = useState([]); // Notifications dynamiques
+  const [notifications, setNotifications] = useState([]);
   const centeredContentRef = useRef(null);
   const navigate = useNavigate();
 
-  // Image de fond pour le dashboard
   useEffect(() => {
     document.body.classList.add('dashboard-page');
     return () => {
@@ -24,12 +24,11 @@ const Layout = ({ children }) => {
     };
   }, []);
 
-  // Charger les notifications depuis l'API
   useEffect(() => {
     const fetchNotifications = async () => {
       try {
         const token = localStorage.getItem('token');
-        const res = await fetch('http://localhost:5000/api/notifications', {
+        const res = await fetch('/api/notifications', {
           headers: {
             'Authorization': `Bearer ${token}`
           }
@@ -42,7 +41,6 @@ const Layout = ({ children }) => {
     };
 
     fetchNotifications();
-    // Actualiser toutes les 30 secondes
     const interval = setInterval(fetchNotifications, 30000);
     return () => clearInterval(interval);
   }, []);
@@ -74,6 +72,11 @@ const Layout = ({ children }) => {
     setCongesSubmenuOpen(!congesSubmenuOpen);
   };
 
+  // NOUVEAU : Toggle pour le sous-menu Mes Congés
+  const toggleMesCongesSubmenu = () => {
+    setMesCongesSubmenuOpen(!mesCongesSubmenuOpen);
+  };
+
   const toggleReclamationsSubmenu = () => {
     setReclamationsSubmenuOpen(!reclamationsSubmenuOpen);
   };
@@ -100,6 +103,10 @@ const Layout = ({ children }) => {
         navigate('/fiches/fonctionnement');
       } else if (term.includes('conge') || term.includes('congé') || term.includes('vacation')) {
         navigate('/conges/demander');
+      } else if (term.includes('mes conges') || term.includes('mes congés') || term.includes('mes demandes')) {
+        navigate('/conges/mes-conges');
+      } else if (term.includes('solde')) {
+        navigate('/conges/solde');
       } else if (term.includes('reclamation') || term.includes('complaint') || term.includes('plainte')) {
         navigate('/reclamations/soumettre');
       } else if (term.includes('documents') || term.includes('administratifs') || term.includes('bulletin') || term.includes('paie') || term.includes('attestation') || term.includes('travail') || term.includes('contrat') || term.includes('certificat') || term.includes('medical')) {
@@ -160,7 +167,7 @@ const Layout = ({ children }) => {
       <div style={{ position: 'fixed', top: '15px', right: '15px', zIndex: 1001, display: 'flex', alignItems: 'center' }}>
         <div style={{ position: 'relative', marginRight: '10px' }}>
           <button onClick={toggleNotifications} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '20px' }}>
-            🔔
+            
             {notifications.length > 0 && (
               <span style={{
                 position: 'absolute',
@@ -227,6 +234,7 @@ const Layout = ({ children }) => {
         <h2>SmartHR Menu</h2>
         <ul>
           <li><Link to="/dashboard" onClick={toggleSidebar}>Dashboard</Link></li>
+          
           <li className="submenu-container">
             <button onClick={toggleProfileSubmenu} className="submenu-toggle">Mon Profil</button>
             {profileSubmenuOpen && (
@@ -237,17 +245,23 @@ const Layout = ({ children }) => {
               </ul>
             )}
           </li>
+
+        
+
+          {/* NOUVEAU : Menu Mes Congés */}
           <li className="submenu-container">
-            <button onClick={toggleCongesSubmenu} className="submenu-toggle">Congés</button>
-            {congesSubmenuOpen && (
+            <button onClick={toggleMesCongesSubmenu} className="submenu-toggle"> Mes Congés</button>
+            {mesCongesSubmenuOpen && (
               <ul className="submenu horizontal">
-                <li><Link to="/conges/annuel" onClick={toggleSidebar}>Congé Annuel</Link></li>
-                <li><Link to="/conges/maladie" onClick={toggleSidebar}>Congé Maladie</Link></li>
-                <li><Link to="/conges/maternite" onClick={toggleSidebar}>Congé Maternité</Link></li>
-                <li><Link to="/conges/demander" onClick={toggleSidebar}>Demander un Congé</Link></li>
+                <li><Link to="/conges/mes-conges" onClick={toggleSidebar}> Mes demandes</Link></li>
+                <li><Link to="/conges/solde" onClick={toggleSidebar}> Mon solde</Link></li>
+                {(user.role === 'Admin' || user.role === 'RH') && (
+                  <li><Link to="/conges/admin" onClick={toggleSidebar}> Gérer les demandes</Link></li>
+                )}
               </ul>
             )}
           </li>
+
           <li className="submenu-container">
             <button onClick={toggleReclamationsSubmenu} className="submenu-toggle">Réclamations</button>
             {reclamationsSubmenuOpen && (
@@ -258,6 +272,7 @@ const Layout = ({ children }) => {
               </ul>
             )}
           </li>
+
           <li className="submenu-container">
             <button onClick={toggleFichesSubmenu} className="submenu-toggle">Fiches Significatives</button>
             {fichesSubmenuOpen && (
@@ -270,6 +285,7 @@ const Layout = ({ children }) => {
               </ul>
             )}
           </li>
+
           <li className="submenu-container">
             <button onClick={toggleDocumentsSubmenu} className="submenu-toggle">Documents Administratifs</button>
             {documentsSubmenuOpen && (
@@ -281,6 +297,7 @@ const Layout = ({ children }) => {
               </ul>
             )}
           </li>
+
           <li className="submenu-container">
             <button onClick={toggleInventaireSubmenu} className="submenu-toggle">Inventaire</button>
             {inventaireSubmenuOpen && (
@@ -293,15 +310,19 @@ const Layout = ({ children }) => {
               </ul>
             )}
           </li>
+
           <li><Link to="/employees" onClick={toggleSidebar}>Liste des Employés</Link></li>
+          
           {(user.role === 'Admin' || user.role === 'RH') && (
             <>
               <li><Link to="/add-employee" onClick={toggleSidebar}>Ajouter Employé</Link></li>
             </>
           )}
+          
           {user.role === 'Admin' && (
             <li><Link to="/notifications" onClick={toggleSidebar}>🔔 Notifications</Link></li>
           )}
+          
           <li><button onClick={() => { handleLogout(); toggleSidebar(); }} className="logout-btn">Déconnexion</button></li>
         </ul>
       </div>

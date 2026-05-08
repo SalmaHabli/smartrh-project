@@ -8,6 +8,13 @@ exports.register = async (req, res) => {
     const { first_name, last_name, email, password, role } = req.body;
     const hashedPassword = await bcrypt.hash(password, 10);
     const newUser = await User.create({ first_name, last_name, email, password: hashedPassword, role });
+
+    // Créer automatiquement le solde de congés
+    const annee = new Date().getFullYear();
+    await pool.query(
+      `INSERT INTO soldes_conges (user_id, conges_payes, conges_maladie, annee, conges_payes_initial, conges_maladie_initial) VALUES ($1, 18, 180, $2, 18, 180) ON CONFLICT DO NOTHING`,
+      [newUser.id, annee]
+    );
     res.status(201).json({ user: newUser });
   } catch (err) {
     res.status(500).json({ message: err.message });

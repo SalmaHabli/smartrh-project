@@ -18,8 +18,8 @@ const DemanderConge = () => {
     const fetchConges = async () => {
       try {
         setConges([
-          { id: 1, type: 'annuel', dateDebut: '2024-01-01', dateFin: '2024-01-05', statut: 'Approuvé' },
-          { id: 2, type: 'maladie', dateDebut: '2024-02-10', dateFin: '2024-02-12', statut: 'En attente' }
+          { id: 1, type: 'annuel', dateDebut: '2026-01-01', dateFin: '2026-01-05', statut: 'Approuvé' },
+          { id: 2, type: 'maladie', dateDebut: '2026-02-10', dateFin: '2026-02-12', statut: 'En attente' }
         ]);
       } catch (err) {
         setError('Erreur lors du chargement des congés');

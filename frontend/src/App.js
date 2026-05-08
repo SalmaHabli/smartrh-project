@@ -30,6 +30,9 @@ import MyInventory from './components/MyInventory';
 import EditInventory from './components/EditInventory';
 import Chatbot from './components/Chatbot';
 import NotificationList from './components/NotificationList';
+import MesConges from './components/MesConges';
+import SoldeConges from './components/SoldeConges';
+import AdminConges from './components/AdminConges';
 import './styles.css';
 
 function App() {
@@ -37,8 +40,12 @@ function App() {
     <Router>
       <div className="App">
         <Routes>
+          {/* Routes publiques */}
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/" element={<Login />} />
+
+          {/* Dashboard */}
           <Route
             path="/dashboard"
             element={
@@ -49,6 +56,8 @@ function App() {
               </ProtectedRoute>
             }
           />
+
+          {/* Profil */}
           <Route
             path="/profile"
             element={
@@ -59,6 +68,8 @@ function App() {
               </ProtectedRoute>
             }
           />
+
+          {/* Module Congés */}
           <Route
             path="/conges/annuel"
             element={
@@ -100,6 +111,38 @@ function App() {
             }
           />
           <Route
+            path="/conges/mes-conges"
+            element={
+              <ProtectedRoute>
+                <Layout>
+                  <MesConges />
+                </Layout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/conges/solde"
+            element={
+              <ProtectedRoute>
+                <Layout>
+                  <SoldeConges />
+                </Layout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/conges/admin"
+            element={
+              <ProtectedRoute roles={['Admin', 'RH']}>
+                <Layout>
+                  <AdminConges />
+                </Layout>
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Module Réclamations */}
+          <Route
             path="/reclamations/soumettre"
             element={
               <ProtectedRoute>
@@ -129,6 +172,8 @@ function App() {
               </ProtectedRoute>
             }
           />
+
+          {/* Module Fiches Significatives */}
           <Route
             path="/fiches/date-entree"
             element={
@@ -179,6 +224,8 @@ function App() {
               </ProtectedRoute>
             }
           />
+
+          {/* Module Employés */}
           <Route
             path="/employees"
             element={
@@ -209,6 +256,8 @@ function App() {
               </ProtectedRoute>
             }
           />
+
+          {/* Module Documents Administratifs */}
           <Route
             path="/documents/bulletin-paie"
             element={
@@ -249,6 +298,8 @@ function App() {
               </ProtectedRoute>
             }
           />
+
+          {/* Module Inventaire */}
           <Route
             path="/inventory"
             element={
@@ -289,6 +340,8 @@ function App() {
               </ProtectedRoute>
             }
           />
+
+          {/* Notifications */}
           <Route
             path="/notifications"
             element={
@@ -299,7 +352,6 @@ function App() {
               </ProtectedRoute>
             }
           />
-          <Route path="/" element={<Login />} />
         </Routes>
         <Chatbot />
       </div>

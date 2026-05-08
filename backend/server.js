@@ -13,6 +13,9 @@ app.use(express.json());
 // ⚠️ IMPORTANT : Enregistrer les routes AVANT app.listen()
 app.use('/api/auth', authRoutes);
 app.use('/api/notifications', notificationRoutes);
+app.use('/api/conges', require('./routes/conges'));
+app.use('/api/employees', require('./routes/employees'));
+app.use('/api/inventory', require('./routes/inventory'));
 
 // Route pour la racine
 app.get('/', (req, res) => {

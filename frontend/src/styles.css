@@ -72,6 +72,7 @@ body.login-page .form-container button {
   font-size: 1.1em;
   margin-top: 25px;
 }
+
 /* Layout du dashboard */
 .dashboard-container {
   display: flex;
@@ -85,7 +86,7 @@ body.login-page .form-container button {
   top: 15px;
   left: 15px;
   z-index: 1001;
-  background: linear-gradient(135deg, #007bff, #0056b3); /* Dégradé bleu */
+  background: linear-gradient(135deg, #007bff, #0056b3);
   border: 2px solid #fff;
   width: 50px;
   height: 50px;
@@ -94,13 +95,13 @@ body.login-page .form-container button {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  border-radius: 50%; /* Rond */
+  border-radius: 50%;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   transition: all 0.3s ease;
 }
 
 .hamburger:hover {
-  transform: scale(1.1); /* Agrandissement au hover */
+  transform: scale(1.1);
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
 }
 
@@ -128,17 +129,17 @@ body.login-page .form-container button {
 
 /* Sidebar */
 .sidebar {
-  width: 280px; /* Légèrement plus large */
-  background: linear-gradient(180deg, #343a40, #495057); /* Dégradé sombre */
+  width: 280px;
+  background: linear-gradient(180deg, #343a40, #495057);
   color: white;
   padding: 25px;
   position: fixed;
   height: 100vh;
   overflow-y: auto;
-  left: -280px; /* Caché */
+  left: -280px;
   top: 0;
   z-index: 1000;
-  transition: left 0.4s ease; /* Animation plus lente */
+  transition: left 0.4s ease;
   box-shadow: 2px 0 10px rgba(0, 0, 0, 0.3);
 }
 
@@ -175,7 +176,7 @@ body.login-page .form-container button {
 
 .sidebar a:hover {
   background: rgba(255, 255, 255, 0.2);
-  transform: translateX(5px); /* Déplacement au hover */
+  transform: translateX(5px);
 }
 
 .logout-btn {
@@ -212,7 +213,7 @@ body.login-page .form-container button {
   margin-left: 0;
   padding: 20px;
   flex: 1;
-  padding-top: 80px; /* Espace pour le hamburger */
+  padding-top: 80px;
 }
 
 /* Responsive */
@@ -229,20 +230,21 @@ body.login-page .form-container button {
     left: 0;
   }
 }
+
 /* Centrage du contenu des pages - Agrandi */
 .main-content .centered-content {
-  max-width: 900px; /* Augmenté de 800px à 900px */
+  max-width: 900px;
   margin: 0 auto;
-  padding: 30px; /* Augmenté de 20px à 30px */
+  padding: 30px;
   background: white;
-  border-radius: 12px; /* Légèrement plus arrondi */
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15); /* Ombre plus douce */
-  min-height: 500px; /* Augmenté de 400px à 500px */
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  min-height: 500px;
   display: flex;
   flex-direction: column;
-  justify-content: flex-start; /* Changé pour commencer en haut */
-  align-items: stretch; /* Étendre les éléments */
-  font-size: 1.1em; /* Texte légèrement plus grand */
+  justify-content: flex-start;
+  align-items: stretch;
+  font-size: 1.1em;
 }
 
 /* Responsive pour mobile - Ajusté */
@@ -257,7 +259,7 @@ body.login-page .form-container button {
 /* Styles spécifiques pour les formulaires (AddEmployee) */
 .centered-content form {
   width: 100%;
-  max-width: 500px; /* Formulaires plus étroits */
+  max-width: 500px;
 }
 
 /* Styles pour les tables (EmployeeList) */
@@ -298,18 +300,19 @@ body.login-page .form-container button {
 /* Responsive pour mobile */
 @media (max-width: 768px) {
   .main-content .centered-content {
-    max-width: 95%; /* Plus large sur mobile */
+    max-width: 95%;
     padding: 15px;
   }
   .centered-content form {
     max-width: 100%;
   }
 }
+
 /* Styles pour les pages publiques (Login/Register) */
 body {
   margin: 0;
   font-family: 'Arial', sans-serif;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); /* Fond dégradé */
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   min-height: 100vh;
   display: flex;
   align-items: center;
@@ -331,7 +334,7 @@ body {
   max-width: 400px;
   width: 100%;
   text-align: center;
-  animation: fadeIn 0.5s ease-in-out; /* Animation d'apparition */
+  animation: fadeIn 0.5s ease-in-out;
 }
 
 @keyframes fadeIn {
@@ -414,6 +417,7 @@ body {
     font-size: 1.8em;
   }
 }
+
 /* Sous-menu dans la sidebar */
 .submenu-toggle {
   background: none;
@@ -498,6 +502,7 @@ body {
   background: #f8f9fa;
   border-radius: 4px;
 }
+
 /* Actions du profil */
 .profile-actions {
   text-align: center;
@@ -526,38 +531,52 @@ body {
   border: 1px solid #ddd;
   border-radius: 4px;
 }
+
 /* Contenu principal */
 .main-content {
   margin-left: 0;
   padding: 20px;
   flex: 1;
   padding-top: 80px;
-  transition: all 0.3s ease; /* Transition douce */
+  transition: all 0.3s ease;
 }
 
 /* Quand sidebar ouverte, centrer le contenu */
 .main-content.sidebar-open .centered-content {
-  max-width: 600px; /* Réduit pour centrer dans l'espace restant */
+  max-width: 600px;
   margin: 0 auto;
 }
 
 /* Quand sidebar fermée, contenu prend toute la largeur */
 .main-content:not(.sidebar-open) .centered-content {
-  max-width: none; /* Pas de limite, prend toute la largeur */
-  margin: 0; /* Pas de centrage */
+  max-width: none;
+  margin: 0;
   width: 100%;
 }
 
 /* Ajustements pour mobile */
 @media (max-width: 768px) {
   .main-content.sidebar-open .centered-content {
-    max-width: 90%; /* Ajusté pour mobile */
+    max-width: 90%;
   }
   .main-content:not(.sidebar-open) .centered-content {
     max-width: 100%;
   }
 }
+
 .main-content.sidebar-open .centered-content {
   max-width: 600px !important;
   margin: 0 auto !important;
 }
+
+.badge {
+  padding: 5px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: normal;
+}
+.badge-warning { background-color: #ffc107; color: #000; }
+.badge-success { background-color: #198754; color: #fff; }
+.badge-danger { background-color: #dc3545; color: #fff; }
+.badge-secondary { background-color: #6c757d; color: #fff; }
+
