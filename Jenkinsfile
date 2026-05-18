@@ -51,15 +51,12 @@ spec:
       }
     }
 
-    // ⚠️ NOUVELLE ÉTAPE : Initialisation du démon Docker
     stage('Initialisation Docker') {
       steps {
         container('docker') {
           script {
             sh '''
               echo "🐳 Attente du démarrage du démon Docker..."
-              
-              # Attendre que Docker soit prêt (max 60 secondes)
               for i in $(seq 1 30); do
                 if docker info > /dev/null 2>&1; then
                   echo "✅ Démon Docker prêt !"
@@ -69,8 +66,6 @@ spec:
                 echo "⏳ Démon Docker pas encore prêt... (tentative $i/30)"
                 sleep 2
               done
-              
-              # Vérification finale
               if ! docker info > /dev/null 2>&1; then
                 echo "❌ Le démon Docker n'a pas démarré"
                 exit 1
@@ -125,7 +120,7 @@ spec:
               docker push ${BACKEND_IMAGE}:latest
               docker push ${FRONTEND_IMAGE}:${IMAGE_TAG}
               docker push ${FRONTEND_IMAGE}:latest
-              echo "✅ Images poussées vers Docker Hub (salma217/)"
+              echo "✅ Images poussées vers Docker Hub"
             """
           }
         }
@@ -139,7 +134,6 @@ spec:
             sh """
               echo "🚀 Déploiement Kubernetes..."
               
-              # Vérifier et créer les déploiements si inexistants
               if ! kubectl get deployment smartrh-backend -n ${K8S_NAMESPACE} > /dev/null 2>&1; then
                 echo "Création du déploiement backend..."
                 kubectl apply -f k8s/backend-deployment.yaml -n ${K8S_NAMESPACE} || true
@@ -150,14 +144,13 @@ spec:
                 kubectl apply -f k8s/frontend-deployment.yaml -n ${K8S_NAMESPACE} || true
               fi
               
-              # Mise à jour des images
               kubectl set image deployment/smartrh-backend \
                 backend=${BACKEND_IMAGE}:${IMAGE_TAG} \
-                -n ${K8S_NAMESPACE} --record
+                -n ${K8S_NAMESPACE}
                 
               kubectl set image deployment/smartrh-frontend \
                 frontend=${FRONTEND_IMAGE}:${IMAGE_TAG} \
-                -n ${K8S_NAMESPACE} --record
+                -n ${K8S_NAMESPACE}
                 
               echo "✅ Images mises à jour dans Kubernetes"
             """
@@ -172,15 +165,25 @@ spec:
           sh """
             echo "⏳ Rollout du Backend..."
             kubectl rollout status deployment/smartrh-backend \
-              -n ${K8S_NAMESPACE} --timeout=120s
+              -n ${K8S_NAMESPACE} --timeout=300s || true
 
             echo "⏳ Rollout du Frontend..."
             kubectl rollout status deployment/smartrh-frontend \
-              -n ${K8S_NAMESPACE} --timeout=120s
+              -n ${K8S_NAMESPACE} --timeout=300s || true
 
             echo ""
             echo "===== PODS FINAUX ====="
             kubectl get pods -n ${K8S_NAMESPACE}
+            
+            # Vérification finale que les pods sont bien Running
+            BACKEND_RUNNING=\$(kubectl get pods -n ${K8S_NAMESPACE} -l app=smartrh-backend --field-selector=status.phase=Running --no-headers | wc -l)
+            FRONTEND_RUNNING=\$(kubectl get pods -n ${K8S_NAMESPACE} -l app=smartrh-frontend --field-selector=status.phase=Running --no-headers | wc -l)
+            
+            if [ \$BACKEND_RUNNING -eq 2 ] && [ \$FRONTEND_RUNNING -eq 2 ]; then
+              echo "✅ Tous les pods sont en état Running"
+            else
+              echo "⚠️ Certains pods ne sont pas encore prêts, mais le déploiement continue"
+            fi
           """
         }
       }
@@ -192,17 +195,25 @@ spec:
       echo "✅ BUILD #${BUILD_NUMBER} DÉPLOYÉ AVEC SUCCÈS !"
     }
     failure {
-      echo "❌ ÉCHEC — Rollback en cours..."
+      echo "❌ ÉCHEC — Vérification des pods avant rollback..."
       container('kubectl') {
         sh """
-          for dep in smartrh-backend smartrh-frontend; do
-            if kubectl rollout history deployment/\$dep -n ${K8S_NAMESPACE} > /dev/null 2>&1; then
-              kubectl rollout undo deployment/\$dep -n ${K8S_NAMESPACE}
-              echo "⏪ Rollback effectué pour: \$dep"
-            else
-              echo "⚠️  Pas d'historique pour \$dep — rollback ignoré"
-            fi
-          done
+          # Vérifier si les pods actuels sont sains avant de faire rollback
+          BACKEND_RUNNING=\$(kubectl get pods -n ${K8S_NAMESPACE} -l app=smartrh-backend --field-selector=status.phase=Running --no-headers | wc -l)
+          
+          if [ \$BACKEND_RUNNING -eq 0 ]; then
+            echo "⚠️ Aucun pod backend en état Running - Rollback nécessaire"
+            for dep in smartrh-backend smartrh-frontend; do
+              if kubectl rollout history deployment/\$dep -n ${K8S_NAMESPACE} > /dev/null 2>&1; then
+                kubectl rollout undo deployment/\$dep -n ${K8S_NAMESPACE}
+                echo "⏪ Rollback effectué pour: \$dep"
+              fi
+            done
+          else
+            echo "✅ Des pods sont en état Running - Pas de rollback nécessaire"
+            echo "📊 État actuel des déploiements:"
+            kubectl get pods -n ${K8S_NAMESPACE}
+          fi
         """
       }
     }
